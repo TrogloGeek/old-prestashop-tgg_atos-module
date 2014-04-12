@@ -66,6 +66,17 @@
     <input type="text" name="return_domain_auto" id="field_return_domain_auto" value="{$return_domain_auto|escape:'htmlall':'UTF-8'}" style="width: 200px;" />
     <span class="hint">{l s='Leave blank to use the same domain as the one used by the visitor.' mod='tgg_atos'}</span>
 </div>
+<!-- TRANSACTION ID TIMEZONE -->
+<label for="field_tid_tz"{if in_array('tid_tz', $highlights.ADVANCED)} class="highlighted"{/if}>{l s='transaction IDs timezone:' mod='tgg_atos'}&nbsp;</label>
+<div class="margin-form">
+    <select name="tid_tz" id="field_tid_tz">
+        <option></option>
+    {foreach DateTimeZone::listIdentifiers() as $tz}
+        <option {if $tid_tz == $tz}selected="selected"{/if}>{$tz|escape:'html':'UTF-8'}</option>
+    {/foreach}
+    </select>
+    <span class="hint">{l s='Ask your SIPS support to know which timezone you have to use.' mod='tgg_atos'}</span>
+</div>
 <!-- MINIMUM TRANSACTION ID -->
 <label for="field_int_min_tid"{if in_array('int_min_tid', $highlights.ADVANCED)} class="highlighted"{/if}>{l s='Start transaction IDs at:' mod='tgg_atos'}&nbsp;</label>
 <div class="margin-form">

@@ -45,6 +45,7 @@ class tgg_atos extends PaymentModule
         ),
         'ADVANCED' => array(
             'PAYMENT_MEANS',
+            'TID_TZ',
             'INT_MIN_TID',
             'BOOL_BINARIES_IN_PATH',
             'BIN_PATH',
@@ -88,6 +89,9 @@ class tgg_atos extends PaymentModule
             'FLOAT_2TPAYMENT_FP_PCT',
             'FLOAT_3TPAYMENT_FP_FXD',
             'FLOAT_3TPAYMENT_FP_PCT'
+        ),
+        '2.2.0' => array(
+            'TID_TZ'
         )
     );
     private $_banks = array(
@@ -209,7 +213,7 @@ class tgg_atos extends PaymentModule
                 define('_USER_ID_LANG_', Context::getContext()->language->id);
             }
         }
-        $this->version = '2.1.8';
+        $this->version = '2.2.0';
         $this->currencies_mode = 'checkbox';
         parent::__construct();
         $this->displayName = $this->l('SIPS/ATOS');
@@ -262,6 +266,8 @@ class tgg_atos extends PaymentModule
                 $this->warning = sprintf(
                         $this->l('Errors occured during installation, see %s, delete, move or rename the file to stop seeing this message.'), $installLogFile
                 );
+            } elseif (!$this->_get('TID_TZ')) {
+                $this->warning = $this->l('No timezone configured');
             } elseif (!$this->_get('ERRORS_MAILTO')) {
                 $this->warning = $this->l('No address has been configured to receive Tgg_Atos disfonctionnement alert. Contact address of your shop will be used until another one is specified.');
             } elseif ($this->_get('BOOL_CHECK_VERSION')) {
@@ -496,6 +502,10 @@ class tgg_atos extends PaymentModule
         if (strlen($param_path) > 54) {
             $errors[] = $this->l('Parameters files path is too long, 54 characters max');
             $highlights['ADVANCED'][] = 'param_path';
+        }
+        if (!$this->_get('TID_TZ')) {
+            $errors[] = $this->l('A timezone has to be set');
+            $highlights['ADVANCED'][] = 'tid_tz';
         }
         $min_tid = intval($this->_get('INT_MIN_TID'));
         if (($min_tid < 1) || ($min_tid > 999999)) {
@@ -737,6 +747,15 @@ class tgg_atos extends PaymentModule
                 $order_state = $this->_get('INT_' . $Data->NB_PAYMENT . 'TPAYMENT_OS');
             }
             $payment_n = $Data->NB_PAYMENT;
+            /* We have to reserve transaction_id for automated transactions */
+            $timezone = new DateTimeZone($this->_get('TID_TZ'));
+            $paymentDate = DateTime::createFromFormat('Ymd', $Response->payment_date, $timezone);
+            $period = new DateInterval(sprintf('P%uD', intval($Data->PERIOD)));
+            $DB = Db::getInstance();
+            for ($pn = 1; $pn < $payment_n; $pn++) {
+                $paymentDate->add($period);
+                $DB->Execute('INSERT IGNORE INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $paymentDate->format('Y-m-d') . '\', atos_transaction_id = ' . intval($Response->transaction_id));
+            }
         } else {
             if (!$order_state) {
                 $order_state = $this->_get('OS_PAYMENT_SUCCESS');
@@ -1254,6 +1273,7 @@ class tgg_atos extends PaymentModule
             'FLOAT_PAYMENT_FEES_P' => 0,
             'ISO_LANG' => '',
             'PAYMENT_MEANS' => 'CB,3,VISA,3,MASTERCARD,3',
+            'TID_TZ' => 'UTC',
             'INT_MIN_TID' => 1,
             'INT_CAPTURE_DAY' => 0,
             'CAPTURE_MODE' => 'AUTHOR_CAPTURE',
@@ -1400,19 +1420,20 @@ class tgg_atos extends PaymentModule
         $error = '';
         $tid = false;
         try {
+            $timezone = new DateTimeZone($this->_get('TID_TZ'));
             $DB = Db::getInstance();
-            $today = date('Y-m-d');
+            $today = new DateTime('now', $timezone);
             //Nettoyage des ID des jours précédents
-            $DB->Execute('DELETE FROM `' . _DB_PREFIX_ . $this->name . '_transactions_today` WHERE date < \'' . $today . '\'');
+            $DB->Execute('DELETE FROM `' . _DB_PREFIX_ . $this->name . '_transactions_today` WHERE date < \'' . $today->format('Y-m-d') . '\'');
             //Réservation d'un ID sur la journée
-            $DB->Execute('INSERT INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $today . '\'');
+            $DB->Execute('INSERT INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $today->format('Y-m-d') . '\'');
             $min_tid = intval($this->_get('INT_MIN_TID'));
             $tid = intval($DB->Insert_ID());
             if ($tid < $min_tid) {
-                $DB->Execute('INSERT INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $today . '\', atos_transaction_id = ' . intval($min_tid));
+                $DB->Execute('INSERT INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $today->format('Y-m-d') . '\', atos_transaction_id = ' . intval($min_tid));
                 $tid = intval($DB->Insert_ID());
                 if (!$tid) {
-                    $DB->Execute('INSERT INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $today . '\'');
+                    $DB->Execute('INSERT INTO `' . _DB_PREFIX_ . $this->name . '_transactions_today` SET date = \'' . $today->format('Y-m-d') . '\'');
                     $tid = intval($DB->Insert_ID());
                 }
             }
