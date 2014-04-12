@@ -1,0 +1,6 @@
+/config.xml
+/log/*
+/param/pathfile
+/param/parmcom.[0-9]+
+/.project
+/nbproject

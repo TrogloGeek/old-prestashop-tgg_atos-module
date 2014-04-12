@@ -1,0 +1,3 @@
+Le module Tgg_Atos rapporte l'erreur suivante :
+
+{error}

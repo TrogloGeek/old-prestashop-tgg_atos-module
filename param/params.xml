@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<params>
+	<!-- 
+		You can define in this file parameters to add or override when Tgg_Atos is calling the request binary file,
+		avoiding modifying any of the files which could be updated later.
+		!! Do NOT use Parmcom key syntax, key-value pairs will be directly sent as request call parameters, overriding any module generated or configured value !!
+		This file is the best way to set template related ATOS vars for exemple, see "ATOS PAGES CUSTOMIZATION" documentation.
+	-->
+	<default>
+		<!-- 
+			Add here additionnal parameters that applies to all payment modes
+			Use CDATA section to wrap values
+			exemple:
+				<language><![CDATA[en]]></language>
+			will set 'language=en' in the commandline parameters when calling request binary file, forcing payment page language to english (which is kind of a bad idea cause you can also override that setting from configuration page, but is a exemple simple enough to be understood) -->
+			!! DO NOT FORGET CDATA WRAPPER !!
+			!! READ CAREFULLY "DATA DICTIONNARY" PART OF ATOS/SIPS DOCUMENTATION !!  
+		-->
+	</default>
+	<single>
+		<!-- Add here additionnal parameters that applies only to single payment mode, overrides any key present in default section if the key is defined in both sections -->
+	</single>
+	<payment_n>
+		<default>
+			<!-- Add here additionnal parameters that applies to all multiple payments modes, overrides any key present in default section if the key is defined in both sections -->
+		</default>
+		<payment_n2>
+			<!-- Add here additionnal parameters that applies only to splitted in two payments mode, overrides any key present in default or payment_n.default sections if the key is defined in both sections -->
+		</payment_n2>
+		<payment_n3>
+			<!-- Add here additionnal parameters that applies only to splitted in three payments mode, overrides any key present in default or payment_n.default sections if the key is defined in both sections -->
+		</payment_n3>
+	</payment_n>
+</params>

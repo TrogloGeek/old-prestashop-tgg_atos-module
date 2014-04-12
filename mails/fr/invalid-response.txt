@@ -1,0 +1,5 @@
+La banque a renvoyé une réponse invalide.
+
+{error}
+
+{response_txt} 

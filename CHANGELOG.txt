@@ -1,0 +1,51 @@
+version 2.1 RC 7 :
+- BACK: Mécanisme de vérification de la disponibilité d'une nouvelle version
+- BACK: Mécanisme d'ajout des valeurs par défaut pour les nouvelles variables de configuration lors de la mise à jour du module
+- BACK: Possibilité de désactiver l'ajout de logs dans la commande
+- BACK: Possibilité de générer une commande avec un statut prédéfini en cas d'échec de paiement et en cas de retour par annulation
+- BACK: Possibilité de configurer le montant du premier versement pour les paiements en plusieurs fois
+- ALL: Ajout de la banque CITELIS
+- ALL: Ajout de la banque Société Marseillaise de Crédit
+- ALL: Mise à jour du certificat de développement LCL
+
+version 2.1 RC 6 (INCOMPLETE LOG):
+- DEBUG: nombreuses améliorations du système de débuggage
+- ALL: Gestion de frais bancaires
+- ALL: Gestion du forçage de retour client (suppression de la page de confirmation ATOS)
+- FRONT: Cinématique de retour modifiée en cas d'annulation/échec du paiement.
+
+version 2.0 BETA 4 RC 4
+- DEBUG: Génération de logs lors de l'installation.
+- BUG/COMPAT: Nettoyage d'une occurence d'utilisation de SERVER_NAME qui a été oubliée lors de la modification de compatibilité version 2.0 BETA 1 RC 1.
+- ALL: Ajout de la possibilité de restreindre l'accès aux méthodes de paiement en 1, 2 ou 3 fois à un montant de panier minimum.
+- FRONT: Le module prévient maintenant l'utilisateur lorsqu'un changement de devise doit intervenir pour utiliser cette passerelle de paiement.
+- BUG/COMPAT: Compatibilité avec le mode Guest checkout de Prestashop 1.4.
+- BUG/COMPAT: Correction de l'option permettant l'utilisation des binaires ATOS par défaut du serveur.
+- BO: mise en mémoire de l'onglet de configuration actif dans le back-office du module lors de la soumission du formulaire.
+- COMPAT: utilisation d'un wrapper de compatibilité pour la création de dossier de thème pour la réécriture des fichiers de traduction.
+- BO: Ajout de liens vers le blog et la documentation incluse.
+
+version 2.0 BETA 3 RC 3
+- BUG: le problème avec les paiement trop faibles a été reglé (remplissage de zéros par la gauche du montant envoyé à atos).
+- INTERNAL/COMPAT: amélioration de la compatibilité PS 1.4 par un wrapper de compatibilité overridant la fonction validateOrder.
+- BO: possibilité de configurer les champs CAPTURE_MODE et CAPTURE_DAY pour les paiement en une fois.
+
+version 2.0 BETA 2 RC 2
+- INTERNAL/COMPAT: tpl/tgg_atos-front-payment-redirect.tpl corrigé pour compatibilité PS 1.4
+- INTERNAL/COMPAT/COSMETIC: associe le module à la catégorie payments_gateways si PS >= 1.4
+
+version 2.0 BETA 1 RC 1
+- BO: refonte du back office
+- BO: possibilité de définir le protocole à utiliser systématiquement lors des retours de banque.
+- BO: possibilité de définir le domaine vers lequel se font les retours de banque.
+- BO/SECURITY/COMPAT: possibilité de définir un domaine et un protocole de retour spécifique aux réponses automatiques 
+- BO: possibilité de définir une langue unique.
+- INTERNAL/FS: Modification de la hiérarchie des fichiers pour faciliter la déportation des templates dans le dossier de thème.
+- BO/LINUX: (Linux uniquement) Automatisation de l'export des tpl, images et fichier de langue vers le dossier de theme. Réécriture des fichiers de langue à la volée. Nécessite un droit d'écriture et d'exécution sur le contenu du dossier de templates.  
+- ALL: Support du paiement en 2/3 fois
+- DEFAULT-CONFIG: Par défaut, les logos de cartes sont maintenant affichés dans le bloc 3 plutôt que 1 pour ne pas avoir de texte généré par ATOS.
+- INTERNAL/COMPAT: Abandon des fonctions CORE PHP escapeshellcmd et escapeshellarg qui posaient problème sur des hébergements à bas coût
+- INTERNAL/COMPAT: Utilisation de la variable d'environnement HTTP_HOST plutôt que SERVER_NAME (posait problème sur les serveurs 1&1)
+- INTERNAL/COMPAT/WINDOWS: Les chemins dont la valeur passe par Tools::getValue ont leurs backslashs remplacés par des slashs
+- INTERNAL/COMPAT/WINDOWS: Les arguments sont entourés de guillemets doubles plutot que simples
+
