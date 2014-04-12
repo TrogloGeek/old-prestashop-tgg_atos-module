@@ -53,4 +53,3 @@ version 2.0 BETA 1 RC 1
 - INTERNAL/COMPAT: Utilisation de la variable d'environnement HTTP_HOST plutôt que SERVER_NAME (posait problème sur les serveurs 1&1)
 - INTERNAL/COMPAT/WINDOWS: Les chemins dont la valeur passe par Tools::getValue ont leurs backslashs remplacés par des slashs
 - INTERNAL/COMPAT/WINDOWS: Les arguments sont entourés de guillemets doubles plutot que simples
-

@@ -3,10 +3,11 @@
 *.md            text eol=lf
 *.txt           text eol=lf
 *.html          text eol=lf
+*.xml          text eol=lf
 *.php           text eol=lf
 *.tpl           text eol=lf
 *.tpl.exemple   text eol=lf
 *.js            text eol=lf
 *.css           text eol=lf
-parmcom.*       binary
-certif.*        binary
+parmcom.*       text eol=lf
+certif.*        text eol=lf
