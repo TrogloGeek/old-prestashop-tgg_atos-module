@@ -2,21 +2,22 @@
 
 require_once '../../../config/config.inc.php';
 require_once _PS_ROOT_DIR_.'/init.php';
+require_once '../tgg_atos.php';
 /* @var $cookie Cookie */
 if (!$cookie->isLogged(true)) {
-    Tools::redirect('authentication.php?back=order.php');
+    tgg_atos::redirectToShop('authentication.php?back=order.php');
     die();
 }
 /* @var $cart Cart */
 if ($cart->OrderExists()) {
-	Tools::redirect('history.php');
+	tgg_atos::redirectToShop('history.php');
 	die();
 }
-require_once '../tgg_atos.php';
+
 $Tgg_Atos = new tgg_atos();
 $splitted = Tools::getValue('splitted', FALSE);
 if ($Tgg_Atos->canProcess($cart, $splitted) !== TRUE) {
-	Tools::redirect('order.php?step=3');
+	tgg_atos::redirectToShop('order.php?step=3');
 	die();
 }
 require_once _PS_ROOT_DIR_.'/header.php';

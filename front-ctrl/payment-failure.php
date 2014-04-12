@@ -2,17 +2,18 @@
 
 require_once '../../../config/config.inc.php';
 require_once _PS_ROOT_DIR_.'/init.php';
+require_once '../tgg_atos.php';
 /* @var $cookie Cookie */
 if (!$cookie->isLogged(true)) {
-    Tools::redirect('authentication.php?back=order.php');
+    tgg_atos::redirectToShop('authentication.php?back=order.php');
     die();
 }
 /* @var $cart Cart */
 if ($cart->OrderExists()) {
-	Tools::redirect('history.php');
+	tgg_atos::redirectToShop('history.php');
 	die();
 }
-require_once '../tgg_atos.php';
+
 $Tgg_Atos = new tgg_atos();
 
 require_once _PS_ROOT_DIR_.'/header.php';

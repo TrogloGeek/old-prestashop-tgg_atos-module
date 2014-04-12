@@ -1,3 +1,8 @@
+version 2.8 :
+- COMPAT/PS: Intégration d'éléments de pseudo-compatibilité 1.5.x, cela ne fait cependant pas du module une solution fiable et pérenne pour Prestashop 1.5.x
+- COMPAT/ATOS: Support amélioré de la fonctionnalité de retour forcé, tous les serveurs ATOS n'agissant pas de manière identique en la matière
+- COMPAT/PS: Retrait du nommage de la passerelle de paiement sensible au contexte de paiements simples ou multiples, le nom d'affichage est de nouveau utilisé car sans cela Prestashop refuse d'afficher la confirmation de commande et redirige vers l'historique de paiement. Pour rappel, le nom d'affichage du module peut être modifié en utilisant le moteur de traduction de Prestashop.
+
 version 2.1 RC 7 :
 - BACK: Mécanisme de vérification de la disponibilité d'une nouvelle version
 - BACK: Mécanisme d'ajout des valeurs par défaut pour les nouvelles variables de configuration lors de la mise à jour du module

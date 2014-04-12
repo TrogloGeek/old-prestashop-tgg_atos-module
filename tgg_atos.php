@@ -203,10 +203,12 @@ class tgg_atos extends PaymentModule {
 
 	public function __construct() {
 		$this->name = 'tgg_atos';
-		$this->tab = version_compare(_PS_VERSION_, '1.4', '<') ? 'Payment' : 'payments_gateways';
-		if (!version_compare(_PS_VERSION_, '1.4', '<'))
+		$this->tab = self::PsVersionCompare('1.4', '<') ? 'Payment' : 'payments_gateways';
+		if (self::PsVersionCompare('1.4', '>='))
 			$this->need_instance = 1;
-		$this->version = '2.1.7alpha2';
+		if (self::PsVersionCompare('1.5', '>='))
+			if (!defined('_USER_ID_LANG_')) define('_USER_ID_LANG_', Context::getContext()->language->id);
+		$this->version = '2.1.8';
 		$this->currencies_mode = 'checkbox';
 		parent::__construct();
 		$this->displayName = $this->l('SIPS/ATOS');
@@ -214,6 +216,29 @@ class tgg_atos extends PaymentModule {
 		$this->confirmUninstall = $this->l('If you uninstall this module, all configuration related to ATOS payment will be deleted, including any production certificate file you could have uploaded. Only logfiles are left in place for security reasons. If you intended only to stop using ATOS for a while and use it again later you should consider disabling this module instead of uninstalling it. Uninstall it anyway ?');
 		$this->_autoCheck();
 	}
+	
+	public static function PsVersionCompare($version, $operator = '>=')
+	{
+		return version_compare(_PS_VERSION_, $version, $operator);
+	}
+	
+	public static function redirect($to = '', $code = 302)
+	{
+		$baseUri = _MODULE_DIR_ . basename(dirname(__FILE__)) . '/front-ctrl/';
+		if (self::PsVersionCompare('1.5', '<'))
+			return Tools::redirect($baseUri.$to);
+		header('Location: '.$baseURI . $to, TRUE, $code);
+		exit;
+	}
+	
+	public static function redirectToShop($to = '', $code = 302)
+	{
+		if (!empty($to) || self::PsVersionCompare('1.5', '<'))
+			return Tools::redirect($to);
+		header('Location: '.__PS_BASE_URI__, TRUE, $code);
+		exit;
+	}
+
 	
 	/**
 	 * Checks if module installation generated errors log, if yes displays warning message in PS module administration 
@@ -261,7 +286,7 @@ class tgg_atos extends PaymentModule {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Install hook override
 	 * @return boolean Success state
@@ -607,13 +632,15 @@ class tgg_atos extends PaymentModule {
 	/**
 	 * Process the unencrypted bank response, Prestashop logics about order creation and logs goes here
 	 * @global Cookie $cookie Alters currency if needed to correspond to the one used by bank
-	 * @global Cart $cart Loads into it the cart that has been used for this transaction
 	 * @param stdClass $Response Response hashmap
-	 * @param Customer $Customer Will be setted with the Customer who holds the order
-	 * @param Order $Order Will be setted with the Order that has been validated
+	 * @param Customer $Customer Will be set with the Customer who holds the order
+	 * @param Order $Order Will be set with the Order that has been validated
+	 * @param Currency $Currency Will be set with the Currency hat has been used by paiement
+	 * @param float $amount Will be set to effective paiement amount
+	 * @param Cart $cart Will be set to the cart being turned into Order
 	 * @return boolean Return true if the order has been created (even if created by a former call) 
 	 */
-	public function processResponse($Response, &$Customer, &$Order, &$Currency, &$amount, &$cart, $mode = self::RESPONSE_MODE_POST) {
+	public function processResponse($Response, &$Customer, &$Order, &$Currency, &$amount, &$cart) {
 		global $cookie;
 		$Order = null;
 		$Response->caller_ip_address = $_SERVER['REMOTE_ADDR'];
@@ -622,7 +649,7 @@ class tgg_atos extends PaymentModule {
 		if (!Validate::isLoadedObject($cart)) {
 			return $this->_invalid_response($this->l('Cart ID returned in id_order field does not exist'), $Response);
 		}
-		if ($mode == self::RESPONSE_MODE_POST) {
+		if (!empty($Response->customer_id)) {
 			$Customer = new Customer($Response->customer_id);
 			if ($cart->id_customer != $Customer->id) {
 				return $this->_invalid_response($this->l('Cart which ID has been returned in field id_order does not belong to Customer which ID has been returned in field id_customer'), $Response);
@@ -686,8 +713,8 @@ class tgg_atos extends PaymentModule {
 				$cart->id,
 				$order_state,
 				($amount - $this->getCartFees($cart, $payment_currency, $payment_n ? $payment_n : 1)),
-				($payment_n ? sprintf($this->l('%u times CC'), $payment_n) : $this->l('Credit Card')),
-				$this->_makeOrderMessage($Response, $mode),
+				$this->displayName,
+				$this->_makeOrderMessage($Response),
 				array(),
 				($cart->id_currency != $Currency->id) ? $Currency->id : NULL,
 				FALSE,
@@ -1300,10 +1327,10 @@ class tgg_atos extends PaymentModule {
 			if ($output[0] == '0') {
 				return array_slice($output, 2);
 			} else {
-				$this->_debug_error($this->l('Error returned when calling').' '.$exename, 'binary-returned-error', array('{error}' => $output[1], '{exename}' => $exename));
+				$this->_debug_error($this->l('ATOS Error returned when calling').' '.$exename, 'binary-returned-error', array('{error}' => $output[1], '{exename}' => $exename));
 			}
 		} else {
-			$this->_debug_error($this->l('Error returned when calling').' '.$exename, 'binary-returned-error', array('{error}' => '('.$status.'): '.implode("\n", $longoutput), '{exename}' => $exename));
+			$this->_debug_error($this->l('SYSTEM Error returned when calling').' '.$exename, 'binary-returned-error', array('{error}' => '('.$status.'): '.implode("\n", $longoutput), '{exename}' => $exename));
 		}
 		return FALSE;
 	}
@@ -1346,13 +1373,14 @@ class tgg_atos extends PaymentModule {
 		return FALSE;
 	}
 
-	protected function _makeOrderMessage($Response, $mode) {
+	protected function _makeOrderMessage($Response) {
 		if (!$this->_get('BOOL_ORDER_MESSAGE'))
 			return '';
 		$retval = $Response->payment_means . "\n"
 			. str_replace('.', ' #### #### ##', $Response->card_number) . "\n";
 		foreach ($this->_responseFieldsLoggedInOrder as $k)
-			$retval .= sprintf('%s: %s%s', $k, $Response->$k, "\n");
+			if (isset($Response->$k))
+				$retval .= sprintf('%s: %s%s', $k, $Response->$k, "\n");
 		return $retval;
 	}
 
@@ -1370,10 +1398,8 @@ class tgg_atos extends PaymentModule {
 			$F = NULL;
 			if ($this->_get('BOOL_RESPONSE_LOG_CSV')) {
 				$fname = $this->_getPath('LOG').'response-'.date('Y-m-d').'.csv';
-				$header = !file_exists($fname);
 				if ($F = fopen($fname, 'a')) {
-					if ($header)
-						fputcsv($F, array_keys($response), ';', '"');
+					fputcsv($F, array_keys($response), ';', '"');
 					fputcsv($F, $response, ';', '"');
 				}
 				fclose($F);
@@ -1444,7 +1470,7 @@ class tgg_atos extends PaymentModule {
 	protected function _updateLngKey($line) {
 		$new_key = '<{'.$this->name.'}'._THEME_NAME_.'>';
 		//If PS version 1.4 or upper, strtolower the key
-		if (version_compare(_PS_VERSION_, '1.4', '>='))
+		if (self::PsVersionCompare('1.4', '>='))
 			$new_key = Tools::strtolower($new_key);
 		return str_replace('<{'.$this->name.'}prestashop>', $new_key, $line);
 	}
@@ -1527,14 +1553,8 @@ class tgg_atos extends PaymentModule {
 		echo $ob;
 	}
 	
-	public function fetchClientReturnData(&$mode) {
-		if ($this->_get('BOOL_FORCE_RETURN')) {
-			$mode = self::RESPONSE_MODE_GET;
-			return isset($_GET['DATA']) ? $_GET['DATA'] : null;
-		} else {
-			$mode = self::RESPONSE_MODE_POST;
-			return isset($_POST['DATA']) ? $_POST['DATA'] : null;
-		}
+	public function fetchClientReturnData() {
+		return isset($_POST['DATA']) ? $_POST['DATA'] : ( isset($_GET['DATA']) ? $_GET['DATA'] : null );
 	}
 	
 	public function revertAtosCurrency($atos_code) {
