@@ -1,5 +1,5 @@
 version 2.2.0
-- PHP: Requirement is now set to >= 5.2
+- PHP: Requirement is now set to >= 5.3
 - Added transaction_id configurable timezone handling
 - PAYMENT_N futur payments handling (transaction_id reservation)
 
