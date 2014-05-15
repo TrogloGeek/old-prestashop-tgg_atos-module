@@ -89,3 +89,12 @@
     <input type="text" name="payment_means" id="field_payment_means" value="{$payment_means|escape:'htmlall':'UTF-8'}" style="width: 200px;" />
     <span class="hint">{l s='See documentation given by your bank' mod='tgg_atos'}</span>
 </div>
+<!-- ADVANCED CONTROLS -->
+<label for="field_advanced_controls"{if in_array('advanced_controls', $highlights.ADVANCED)} class="highlighted"{/if}>{l s='Advanced controls:' mod='tgg_atos'}&nbsp;</label>
+<div class="margin-form">
+        <input type="text" name="advanced_controls" id="field_advanced_controls" value="{$advanced_controls|escape:'html':'UTF-8'}"  style="width: 500px;" {if !$bool_advanced_controls}disabled="disabled" {/if}{if $bool_advanced_controls}required="required" {/if}/>
+        <br />
+        <br />
+        <label class="t clearfix" style="width: 500px; line-height: 1.4em; text-align: left;"><input type="checkbox" name="bool_advanced_controls" style="vertical-align: text-bottom;" onclick="{literal}if (!$(this).attr('checked')) {$('#field_advanced_controls').attr('disabled', 'disabled');} else {$('#field_advanced_controls').removeAttr('disabled');}{/literal}" value="1" {if $bool_advanced_controls} checked="checked"{/if}/>&nbsp;&nbsp;{l s='Enable advanced controls for the ATOS API calls' mod='tgg_atos'}</label>
+        <span class="hint">{l s='See user guide for advanced controls against fraud provided by your bank' mod='tgg_atos'}</span>
+</div>

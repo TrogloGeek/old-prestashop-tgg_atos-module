@@ -1,3 +1,7 @@
+version 2.2.1
+- Added possibility to append custom data parameters when requesting ATOS API
+- Added possibility to configure <CONTROLS> data parameter
+
 version 2.2.0
 - PHP: Requirement is now set to >= 5.3
 - Added transaction_id configurable timezone handling

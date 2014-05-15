@@ -37,11 +37,11 @@ class tgg_atos extends PaymentModule
             'BOOL_ORDER_MESSAGE',
             'BOOL_CHECK_VERSION',
             'OS_PAYMENT_CANCELLED',
-            'OS_PAYMENT_FAILED',
+            'OS_PAYMENT_FAILED'
         ),
         'GRAPHIC' => array(
             'CARD_IMG_PATH',
-            'LOGO_NAME',
+            'LOGO_NAME'
         ),
         'ADVANCED' => array(
             'PAYMENT_MEANS',
@@ -55,8 +55,10 @@ class tgg_atos extends PaymentModule
             'RETURN_PROTOCOL_AUTO',
             'RETURN_DOMAIN_AUTO',
             'BOOL_DEBUG_MODE',
+            'BOOL_ADVANCED_CONTROLS',
+            'ADVANCED_CONTROLS',
             'ERRORS_MAILTO',
-            'ERRORS_SHOWTOIP',
+            'ERRORS_SHOWTOIP'
         ),
         '23TIMES' => array(
             'BOOL_2TPAYMENT',
@@ -213,7 +215,7 @@ class tgg_atos extends PaymentModule
                 define('_USER_ID_LANG_', Context::getContext()->language->id);
             }
         }
-        $this->version = '2.2.0';
+        $this->version = '2.2.1';
         $this->currencies_mode = 'checkbox';
         parent::__construct();
         $this->displayName = $this->l('SIPS/ATOS');
@@ -650,6 +652,17 @@ class tgg_atos extends PaymentModule
             } else {
                 $params['data'] = 'NO_RESPONSE_PAGE';
             }
+        }
+        //Adding advanced cards controls
+        if ($this->_get('BOOL_ADVANCED_CONTROLS')) {
+            if (($cbcontrols = $this->_get('ADVANCED_CONTROLS')) != '') {
+                if (isset($params['data'])) {
+                    $params['data'] .= ';<CONTROLS>'.$cbcontrols.'</CONTROLS>';
+                } else {
+                    $params['data'] = '<CONTROLS>'.$cbcontrols.'</CONTROLS>';
+                }
+            }
+            unset($cbcontrols);
         }
         $this->_requestParamsXmlOverride($params, $splitted);
         $output = $this->_call('request', $params);
@@ -1306,6 +1319,8 @@ class tgg_atos extends PaymentModule
             'FLOAT_3TPAYMENT_FEES_P' => 0,
             'BOOL_DEBUG_MODE' => 0,
             'BOOL_FORCE_RETURN' => 0,
+            'BOOL_ADVANCED_CONTROLS' => 0,
+            'ADVANCED_CONTROLS' => '',
             'BOOL_ORDER_MESSAGE' => 1,
             'BOOL_CHECK_VERSION' => 1,
             'OS_PAYMENT_CANCELLED' => 0,
