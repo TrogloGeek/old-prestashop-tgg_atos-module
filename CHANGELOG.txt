@@ -1,3 +1,8 @@
+version 2.2.1
+- Added possibility to configure <CONTROLS> parameter
+- Added possibility to append custom parameters when requesting SIPS API
+- BO: Changed tab sizes to a fixed one so all categories titles fit in
+
 version 2.2.0
 - PHP: Requirement is now set to >= 5.3
 - Added transaction_id configurable timezone handling

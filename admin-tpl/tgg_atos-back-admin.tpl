@@ -91,28 +91,28 @@
     <input type="hidden" name="tabs" id="tabs" value="0">
     <div class="tab-pane" id="tab-pane-tgg_atos">
         <div class="tab-page">
-            <h4 class="tab">{l s='Basic' mod='tgg_atos'}{if count($highlights.BASIC)} ({$highlights.BASIC|@count}){/if}</h2>
+            <h4 class="tab" style="width:150px;">{l s='Basic' mod='tgg_atos'}{if count($highlights.BASIC)} ({$highlights.BASIC|@count}){/if}</h2>
                 {include file=$tpl_path|cat:'tgg_atos-back-admin-basic.tpl'}
                 <div style="clear: both; text-align: center;">
                     <input type="submit" name="updateBasic" class="button" />
                 </div>
         </div>
         <div class="tab-page">
-            <h4 class="tab">{l s='Graphic' mod='tgg_atos'}{if count($highlights.GRAPHIC)} ({$highlights.GRAPHIC|@count}){/if}</h2>
+            <h4 class="tab" style="width:150px;">{l s='Graphic' mod='tgg_atos'}{if count($highlights.GRAPHIC)} ({$highlights.GRAPHIC|@count}){/if}</h2>
                 {include file=$tpl_path|cat:'tgg_atos-back-admin-graphic.tpl'}
                 <div style="clear: both; text-align: center;">
                     <input type="submit" name="updateGraphic" class="button" />
                 </div>
         </div>
         <div class="tab-page">
-            <h4 class="tab">{l s='Advanced' mod='tgg_atos'}{if count($highlights.ADVANCED)} ({$highlights.ADVANCED|@count}){/if}</h2>
+            <h4 class="tab" style="width:150px;">{l s='Advanced' mod='tgg_atos'}{if count($highlights.ADVANCED)} ({$highlights.ADVANCED|@count}){/if}</h2>
                 {include file=$tpl_path|cat:'tgg_atos-back-admin-advanced.tpl'}
                 <div style="clear: both; text-align: center;">
                     <input type="submit" name="updateAdvanced" class="button" />
                 </div>
         </div>
         <div class="tab-page">
-            <h4 class="tab">{l s='2/3 times payment' mod='tgg_atos'}{if count($highlights.23TIMES)} ({$highlights.23TIMES|@count}){/if}</h2>
+            <h4 class="tab" style="width:150px;">{l s='2/3 times payment' mod='tgg_atos'}{if count($highlights.23TIMES)} ({$highlights.23TIMES|@count}){/if}</h2>
                 {include file=$tpl_path|cat:'tgg_atos-back-admin-23times.tpl'}
                 <div style="clear: both; text-align: center;">
                     <input type="submit" name="update23Times" class="button" />
